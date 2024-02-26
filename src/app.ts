@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import notFoundRoute from "./app/middlewares/notFoundRoute";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
+import routes from "./app/routes";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Application routes
+app.use("/api/v1", routes);
 
 // root route
 app.get("/", (_req, res) => {
