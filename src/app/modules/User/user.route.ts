@@ -13,6 +13,11 @@ router.post(
 );
 
 // login user
+router.post(
+  "/login",
+  validateRequest(userSchemasValidation.loginUserSchema),
+  userControllers.loginUser,
+);
 
 // get user
 

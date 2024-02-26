@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { UserRole, UserStatus } from "./user.constant";
 
 type TUserRole = keyof typeof UserRole;
@@ -30,3 +31,13 @@ export interface TRegisterUser {
   password: string;
   confirmPassword: string;
 }
+
+export interface TLoginUser {
+  email: string;
+  password: string;
+}
+
+export type TAccessTokenPayload = {
+  id: Types.ObjectId;
+  role: TUserRole;
+};

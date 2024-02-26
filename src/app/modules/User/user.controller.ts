@@ -13,5 +13,16 @@ const registerUser = catchAsyncHandler(async (req, res) => {
   });
 });
 
-const userControllers = { registerUser };
+const loginUser = catchAsyncHandler(async (req, res) => {
+  const result = await userServices.loginUserIntoDB(req.body);
+
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: "Successfully Login",
+    data: result,
+  });
+});
+
+const userControllers = { registerUser, loginUser };
 export default userControllers;

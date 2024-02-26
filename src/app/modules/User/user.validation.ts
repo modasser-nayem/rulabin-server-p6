@@ -23,5 +23,16 @@ const registerUserSchema = z.object({
     }),
 });
 
-const userSchemasValidation = { registerUserSchema };
+const loginUserSchema = z.object({
+  body: z.object({
+    email: z
+      .string({ required_error: "email is required" })
+      .email({ message: "Invalid email address" }),
+    password: z
+      .string({ required_error: "password is required" })
+      .min(1, { message: "Please provide your password" }),
+  }),
+});
+
+const userSchemasValidation = { registerUserSchema, loginUserSchema };
 export default userSchemasValidation;
