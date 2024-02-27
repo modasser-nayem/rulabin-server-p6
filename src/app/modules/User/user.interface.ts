@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import { UserRole, UserStatus } from "./user.constant";
 
-type TUserRole = keyof typeof UserRole;
+export type TUserRole = keyof typeof UserRole;
 type TUserStatus = keyof typeof UserStatus;
 
 interface TUserAddress {
@@ -41,3 +41,10 @@ export type TAccessTokenPayload = {
   id: Types.ObjectId;
   role: TUserRole;
 };
+
+export interface TChangePassword {
+  userId: Types.ObjectId;
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}

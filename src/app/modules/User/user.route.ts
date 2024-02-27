@@ -2,6 +2,7 @@ import { Router } from "express";
 import userControllers from "./user.controller";
 import validateRequest from "../../middlewares/validateRequest";
 import userSchemasValidation from "./user.validation";
+import auth from "../../middlewares/auth";
 
 const router = Router();
 
@@ -19,15 +20,21 @@ router.post(
   userControllers.loginUser,
 );
 
+// change password
+router.post(
+  "/change-password",
+  auth("customer", "seller"),
+  validateRequest(userSchemasValidation.changePasswordSchema),
+  userControllers.changePassword,
+);
+
+// forget password
+
 // get user
 
 // update user
 
 // update user role
-
-// change password
-
-// forget password
 
 const userRoutes = router;
 export default userRoutes;

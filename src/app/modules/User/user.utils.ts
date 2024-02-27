@@ -39,3 +39,11 @@ export const createAccessToken = (payload: TAccessTokenPayload) => {
 
   return result;
 };
+
+export const createRefreshToken = (payload: TAccessTokenPayload) => {
+  const result = jwt.sign(payload, config.JWT_REFRESH_SECRET as string, {
+    expiresIn: config.JWT_REFRESH_EXPIRES_IN,
+  });
+
+  return result;
+};

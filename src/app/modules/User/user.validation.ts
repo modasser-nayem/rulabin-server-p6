@@ -19,7 +19,7 @@ const registerUserSchema = z.object({
         .min(1, { message: "Please provide confirm password" }),
     })
     .refine((value) => value.password === value.confirmPassword, {
-      message: "Password dose't match!",
+      message: "Confirm Password dose't match!",
     }),
 });
 
@@ -34,5 +34,27 @@ const loginUserSchema = z.object({
   }),
 });
 
-const userSchemasValidation = { registerUserSchema, loginUserSchema };
+const changePasswordSchema = z.object({
+  body: z
+    .object({
+      oldPassword: z
+        .string({ required_error: "oldPassword is required" })
+        .min(1, { message: "Please provide your old password" }),
+      newPassword: z
+        .string({ required_error: "newPassword is required" })
+        .min(1, { message: "Please provide your new password" }),
+      confirmPassword: z
+        .string({ required_error: "confirmPassword is required" })
+        .min(1, { message: "Please provide confirm password" }),
+    })
+    .refine((value) => value.newPassword === value.confirmPassword, {
+      message: "Confirm Password dose't match!",
+    }),
+});
+
+const userSchemasValidation = {
+  registerUserSchema,
+  loginUserSchema,
+  changePasswordSchema,
+};
 export default userSchemasValidation;
