@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import User from "./user.model";
 import config from "../../config";
 import { TAccessTokenPayload } from "./user.interface";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 export const generateUserId = async () => {
   let currentId = (0).toString();
@@ -32,18 +32,30 @@ export const isPasswordMatch = async (plainText: string, hashText: string) => {
   return await bcrypt.compare(plainText, hashText);
 };
 
-export const createAccessToken = (payload: TAccessTokenPayload) => {
+export const createAccessToken = (
+  payload: TAccessTokenPayload,
+  expiresIn?: string,
+) => {
   const result = jwt.sign(payload, config.JWT_ACCESS_SECRET as string, {
-    expiresIn: config.JWT_ACCESS_EXPIRES_IN,
+    expiresIn: expiresIn ? expiresIn : config.JWT_ACCESS_EXPIRES_IN,
   });
 
   return result;
 };
 
-export const createRefreshToken = (payload: TAccessTokenPayload) => {
+export const createRefreshToken = (
+  payload: TAccessTokenPayload,
+  expiresIn?: string,
+) => {
   const result = jwt.sign(payload, config.JWT_REFRESH_SECRET as string, {
-    expiresIn: config.JWT_REFRESH_EXPIRES_IN,
+    expiresIn: expiresIn ? expiresIn : config.JWT_REFRESH_EXPIRES_IN,
   });
 
   return result;
+};
+
+export const jwtVerify = (token: string, secret: string) => {
+  const decode = jwt.verify(token, secret);
+
+  return decode as JwtPayload;
 };

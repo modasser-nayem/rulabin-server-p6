@@ -48,3 +48,10 @@ export interface TChangePassword {
   newPassword: string;
   confirmPassword: string;
 }
+
+export interface TResetPassword {
+  userId: Types.ObjectId;
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
+}

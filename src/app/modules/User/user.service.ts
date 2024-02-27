@@ -1,7 +1,14 @@
+import config from "../../config";
 import { ErrorType } from "../../constant/global.constant";
 import AppError from "../../errors/AppError";
+import sendEmail from "../../utils/sendEmail";
 import { UserStatus } from "./user.constant";
-import { TChangePassword, TLoginUser, TRegisterUser } from "./user.interface";
+import {
+  TChangePassword,
+  TLoginUser,
+  TRegisterUser,
+  TResetPassword,
+} from "./user.interface";
 import User from "./user.model";
 import {
   createAccessToken,
@@ -9,6 +16,7 @@ import {
   createRefreshToken,
   generateUserId,
   isPasswordMatch,
+  jwtVerify,
 } from "./user.utils";
 
 const registerUserIntoDB = async (data: TRegisterUser) => {
@@ -44,7 +52,11 @@ const registerUserIntoDB = async (data: TRegisterUser) => {
 const loginUserIntoDB = async (data: TLoginUser) => {
   const user = await User.findOne({ email: data.email }).select("+password");
   if (!user) {
-    throw new AppError(400, `This email not have user`, ErrorType.validation);
+    throw new AppError(
+      400,
+      "This email not have any account",
+      ErrorType.validation,
+    );
   }
 
   if (!(await isPasswordMatch(data.password, user.password))) {
@@ -103,5 +115,78 @@ const changePassword = async (data: TChangePassword) => {
   return null;
 };
 
-const userServices = { registerUserIntoDB, loginUserIntoDB, changePassword };
+const forgetPassword = async (email: string) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new AppError(
+      400,
+      "This email not have any account",
+      ErrorType.forbidden,
+    );
+  }
+
+  if (user.status === UserStatus.block) {
+    throw new AppError(400, "Your account is blocked", ErrorType.forbidden);
+  }
+
+  const accessToken = createAccessToken(
+    {
+      id: user._id,
+      role: user.role,
+    },
+    "10m",
+  );
+
+  const resetPassUiLink = `${config.RESET_PASS_UI_LINK}/?id=${user._id}&token=${accessToken}`;
+
+  sendEmail(email, resetPassUiLink);
+  return null;
+};
+
+const resetPassword = async (data: TResetPassword) => {
+  const user = await User.findById(data.userId);
+  if (!user) {
+    throw new AppError(
+      403,
+      "You do not have the required permission to access that particular page",
+      ErrorType.forbidden,
+    );
+  }
+
+  if (user.status === UserStatus.block) {
+    throw new AppError(400, "Your account is blocked", ErrorType.forbidden);
+  }
+
+  const decode = jwtVerify(data.token, config.JWT_ACCESS_SECRET as string);
+
+  if (decode.id !== data.userId) {
+    throw new AppError(
+      403,
+      "You do not have the required permission to access that particular page",
+      ErrorType.forbidden,
+    );
+  }
+
+  if (data.newPassword !== data.confirmPassword) {
+    throw new AppError(
+      400,
+      "Confirm password does't match",
+      ErrorType.validation,
+    );
+  }
+
+  const newHashedPassword = await createHashPassword(data.newPassword);
+
+  await User.findByIdAndUpdate(user._id, { password: newHashedPassword });
+
+  return null;
+};
+
+const userServices = {
+  registerUserIntoDB,
+  loginUserIntoDB,
+  changePassword,
+  forgetPassword,
+  resetPassword,
+};
 export default userServices;

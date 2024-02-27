@@ -1,4 +1,6 @@
 import config from "../../config";
+import { ErrorType } from "../../constant/global.constant";
+import AppError from "../../errors/AppError";
 import catchAsyncHandler from "../../utils/catchAsyncHandler";
 import sendResponse from "../../utils/sendResponse";
 import userServices from "./user.service";
@@ -57,5 +59,42 @@ const changePassword = catchAsyncHandler(async (req, res) => {
   });
 });
 
-const userControllers = { registerUser, loginUser, changePassword };
+const forgetPassword = catchAsyncHandler(async (req, res) => {
+  const result = await userServices.forgetPassword(req.body.email);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Check your email. Send mail for forget password",
+    data: result,
+  });
+});
+
+const resetPassword = catchAsyncHandler(async (req, res) => {
+  const token = req.headers.authorization;
+
+  if (!token) {
+    throw new AppError(400, "headers token is required", ErrorType.server);
+  }
+
+  const result = await userServices.resetPassword({
+    ...req.body,
+    token: token,
+  });
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Password successfully reset",
+    data: result,
+  });
+});
+
+const userControllers = {
+  registerUser,
+  loginUser,
+  changePassword,
+  forgetPassword,
+  resetPassword,
+};
 export default userControllers;

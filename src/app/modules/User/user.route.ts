@@ -23,12 +23,24 @@ router.post(
 // change password
 router.post(
   "/change-password",
-  auth("customer", "seller"),
+  auth(),
   validateRequest(userSchemasValidation.changePasswordSchema),
   userControllers.changePassword,
 );
 
 // forget password
+router.post(
+  "/forget-password",
+  validateRequest(userSchemasValidation.forgetPasswordSchema),
+  userControllers.forgetPassword,
+);
+
+// reset password
+router.post(
+  "/reset-password",
+  validateRequest(userSchemasValidation.resetPasswordSchema),
+  userControllers.resetPassword,
+);
 
 // get user
 

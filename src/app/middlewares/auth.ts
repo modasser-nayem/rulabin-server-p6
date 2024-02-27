@@ -1,4 +1,3 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
 import { ErrorType } from "../constant/global.constant";
 import AppError from "../errors/AppError";
 import { TUserRole } from "../modules/User/user.interface";
@@ -6,6 +5,7 @@ import catchAsyncHandler from "../utils/catchAsyncHandler";
 import config from "../config";
 import User from "../modules/User/user.model";
 import { UserStatus } from "../modules/User/user.constant";
+import { jwtVerify } from "../modules/User/user.utils";
 
 const auth = (...roles: TUserRole[]) => {
   return catchAsyncHandler(async (req, res, next) => {
@@ -19,10 +19,7 @@ const auth = (...roles: TUserRole[]) => {
       );
     }
 
-    const decode = jwt.verify(
-      accessToken,
-      config.JWT_ACCESS_SECRET as string,
-    ) as JwtPayload;
+    const decode = jwtVerify(accessToken, config.JWT_ACCESS_SECRET as string);
 
     const user = await User.findById(decode.id);
     if (!user) {
@@ -37,7 +34,7 @@ const auth = (...roles: TUserRole[]) => {
       throw new AppError(403, "Your account is blocked", ErrorType.forbidden);
     }
 
-    if (roles && !roles.includes(user.role)) {
+    if (roles.length && !roles.includes(user.role)) {
       throw new AppError(
         403,
         "You do not have the required permission to access that particular page",

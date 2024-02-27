@@ -52,9 +52,37 @@ const changePasswordSchema = z.object({
     }),
 });
 
+const forgetPasswordSchema = z.object({
+  body: z.object({
+    email: z
+      .string({ required_error: "email is required" })
+      .email({ message: "Invalid email address" }),
+  }),
+});
+
+const resetPasswordSchema = z.object({
+  body: z
+    .object({
+      userId: z
+        .string({ required_error: "userId is required" })
+        .refine((value) => value !== "", { message: "userId is required" }),
+      newPassword: z
+        .string({ required_error: "newPassword is required" })
+        .min(1, { message: "Please provide your new password" }),
+      confirmPassword: z
+        .string({ required_error: "confirmPassword is required" })
+        .min(1, { message: "Please provide confirm password" }),
+    })
+    .refine((value) => value.newPassword === value.confirmPassword, {
+      message: "Confirm Password dose't match!",
+    }),
+});
+
 const userSchemasValidation = {
   registerUserSchema,
   loginUserSchema,
   changePasswordSchema,
+  forgetPasswordSchema,
+  resetPasswordSchema,
 };
 export default userSchemasValidation;
