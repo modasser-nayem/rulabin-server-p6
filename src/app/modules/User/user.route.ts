@@ -42,11 +42,32 @@ router.post(
   userControllers.resetPassword,
 );
 
-// get user
+// get user profile
+router.get("/profile", auth(), userControllers.getUserProfile);
 
-// update user
+// update user profile
+router.put(
+  "/profile",
+  auth(),
+  validateRequest(userSchemasValidation.updateUserProfileSchema),
+  userControllers.updateUserProfile,
+);
+
+// update user status
+router.patch(
+  "/status",
+  auth("admin"),
+  validateRequest(userSchemasValidation.updateUserStatusSchema),
+  userControllers.updateUserStatus,
+);
 
 // update user role
+router.patch(
+  "/role",
+  auth("admin"),
+  validateRequest(userSchemasValidation.updateUserRoleSchema),
+  userControllers.updateUserRole,
+);
 
 const userRoutes = router;
 export default userRoutes;

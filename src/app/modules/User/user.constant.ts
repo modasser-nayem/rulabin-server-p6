@@ -7,4 +7,4 @@ export const UserRole = {
 export const UserStatus = {
   block: "block",
   unblock: "unblock",
-};
+} as const;

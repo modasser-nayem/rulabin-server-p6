@@ -1,13 +1,16 @@
+import { Types } from "mongoose";
 import config from "../../config";
 import { ErrorType } from "../../constant/global.constant";
 import AppError from "../../errors/AppError";
 import sendEmail from "../../utils/sendEmail";
-import { UserStatus } from "./user.constant";
 import {
   TChangePassword,
   TLoginUser,
   TRegisterUser,
   TResetPassword,
+  TUpdateUserProfile,
+  TUserRole,
+  TUserStatus,
 } from "./user.interface";
 import User from "./user.model";
 import {
@@ -18,6 +21,7 @@ import {
   isPasswordMatch,
   jwtVerify,
 } from "./user.utils";
+import { UserStatus } from "./user.constant";
 
 const registerUserIntoDB = async (data: TRegisterUser) => {
   if (data.password !== data.confirmPassword) {
@@ -182,11 +186,77 @@ const resetPassword = async (data: TResetPassword) => {
   return null;
 };
 
+const getUserProfile = async (userId: Types.ObjectId) => {
+  const user = await User.findById(userId, { status: 0, password: 0, __v: 0 });
+  if (!user) {
+    throw new AppError(
+      403,
+      `You do not have the required permission to access that particular page`,
+      ErrorType.forbidden,
+    );
+  }
+
+  return user;
+};
+
+const updateUserProfile = async (
+  userId: Types.ObjectId,
+  data: TUpdateUserProfile,
+) => {
+  const user = await User.findById(userId, { status: 0, password: 0, __v: 0 });
+  if (!user) {
+    throw new AppError(
+      403,
+      `You do not have the required permission to access that particular page`,
+      ErrorType.forbidden,
+    );
+  }
+
+  const result = await User.findByIdAndUpdate(user._id, data, {
+    new: true,
+    projection: { status: 0, password: 0, __v: 0 },
+  });
+
+  return result;
+};
+
+const updateUserStatus = async (data: {
+  userId: Types.ObjectId;
+  newStatus: TUserStatus;
+}) => {
+  const user = await User.findById(data.userId);
+  if (!user) {
+    throw new AppError(404, `User not found!`, ErrorType.notfound);
+  }
+
+  await User.findByIdAndUpdate(user._id, { status: data.newStatus });
+
+  return null;
+};
+
+const updateUserRole = async (data: {
+  userId: Types.ObjectId;
+  newRole: TUserRole;
+}) => {
+  const user = await User.findById(data.userId);
+  if (!user) {
+    throw new AppError(404, `User not found!`, ErrorType.notfound);
+  }
+
+  await User.findByIdAndUpdate(user._id, { role: data.newRole });
+
+  return null;
+};
+
 const userServices = {
   registerUserIntoDB,
   loginUserIntoDB,
   changePassword,
   forgetPassword,
   resetPassword,
+  getUserProfile,
+  updateUserProfile,
+  updateUserRole,
+  updateUserStatus,
 };
 export default userServices;

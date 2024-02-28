@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 import { UserRole, UserStatus } from "./user.constant";
 
 export type TUserRole = keyof typeof UserRole;
-type TUserStatus = keyof typeof UserStatus;
+export type TUserStatus = keyof typeof UserStatus;
 
 interface TUserAddress {
   country: string;
@@ -35,6 +35,14 @@ export interface TRegisterUser {
 export interface TLoginUser {
   email: string;
   password: string;
+}
+
+export interface TUpdateUserProfile {
+  name?: string;
+  email?: string;
+  image?: string;
+  phoneNo?: string;
+  address?: TUserAddress;
 }
 
 export type TAccessTokenPayload = {

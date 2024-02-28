@@ -25,7 +25,7 @@ const auth = (...roles: TUserRole[]) => {
     if (!user) {
       throw new AppError(
         401,
-        "You are not authorize user",
+        "You are unauthorize user",
         ErrorType.authorization,
       );
     }

@@ -3,6 +3,7 @@ import { ErrorType } from "../../constant/global.constant";
 import AppError from "../../errors/AppError";
 import catchAsyncHandler from "../../utils/catchAsyncHandler";
 import sendResponse from "../../utils/sendResponse";
+import { UserRole, UserStatus } from "./user.constant";
 import userServices from "./user.service";
 
 const registerUser = catchAsyncHandler(async (req, res) => {
@@ -90,11 +91,77 @@ const resetPassword = catchAsyncHandler(async (req, res) => {
   });
 });
 
+const getUserProfile = catchAsyncHandler(async (req, res) => {
+  const result = await userServices.getUserProfile(req.user.id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Profile successfully retrieved",
+    data: result,
+  });
+});
+
+const updateUserProfile = catchAsyncHandler(async (req, res) => {
+  const result = await userServices.updateUserProfile(req.user.id, req.body);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Profile successfully updated",
+    data: result,
+  });
+});
+
+const updateUserStatus = catchAsyncHandler(async (req, res) => {
+  const userStatusArray = Object.entries(UserStatus).map((status) => status[1]);
+
+  if (!userStatusArray.includes(req.body.status)) {
+    throw new AppError(400, "invalid user status", ErrorType.validation);
+  }
+
+  const result = await userServices.updateUserStatus({
+    userId: req.body.userId,
+    newStatus: req.body.status,
+  });
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "User status successfully update",
+    data: result,
+  });
+});
+
+const updateUserRole = catchAsyncHandler(async (req, res) => {
+  const userRoleArray = Object.entries(UserRole).map((role) => role[1]);
+
+  if (!userRoleArray.includes(req.body.role)) {
+    throw new AppError(400, "invalid user role", ErrorType.validation);
+  }
+
+  const result = await userServices.updateUserRole({
+    userId: req.body.userId,
+    newRole: req.body.role,
+  });
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "User role successfully update",
+    data: result,
+  });
+});
+
 const userControllers = {
   registerUser,
   loginUser,
   changePassword,
   forgetPassword,
   resetPassword,
+  getUserProfile,
+  updateUserProfile,
+  updateUserStatus,
+  updateUserRole,
 };
 export default userControllers;
