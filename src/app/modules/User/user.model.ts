@@ -6,6 +6,7 @@ const userSchema = new Schema<TUser>(
   {
     id: {
       type: String,
+      unique: true,
     },
     name: {
       type: String,

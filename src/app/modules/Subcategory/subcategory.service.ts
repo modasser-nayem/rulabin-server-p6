@@ -65,7 +65,7 @@ const deleteSubcategoryIntoDB = async (subcategoryId: string) => {
     throw new AppError(400, `invalid subcategory id`, ErrorType.validation);
   }
 
-  await Category.findByIdAndDelete(subcategoryId);
+  await Subcategory.findByIdAndDelete(subcategoryId);
 
   return null;
 };
