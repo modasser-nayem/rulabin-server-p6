@@ -32,10 +32,7 @@ const updateCategoryIntoDB = async (
     throw new AppError(400, `invalid category id`, ErrorType.validation);
   }
 
-  if (
-    data?.name === currentCategory.name ||
-    (await Category.findOne({ name: data.name }))
-  ) {
+  if (data?.name && (await Category.findOne({ name: data.name }))) {
     throw new AppError(
       400,
       `Category name is already exist`,

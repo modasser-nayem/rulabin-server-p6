@@ -29,10 +29,7 @@ const updateBrandIntoDB = async (brandId: string, data: Partial<TBrand>) => {
     throw new AppError(400, `invalid brand id`, ErrorType.validation);
   }
 
-  if (
-    data?.name === currentBrand.name ||
-    (await Brand.findOne({ name: data.name }))
-  ) {
+  if (data?.name && (await Brand.findOne({ name: data.name }))) {
     throw new AppError(
       400,
       `Brand name is already exist`,
