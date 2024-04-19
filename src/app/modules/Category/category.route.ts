@@ -18,6 +18,9 @@ router.post(
 // get all category
 router.get("/", categoryControllers.getAllCategory);
 
+// get single category
+router.get("/:id", auth(UserRole.admin), categoryControllers.getSingleCategory);
+
 // update category
 router.put(
   "/:id",

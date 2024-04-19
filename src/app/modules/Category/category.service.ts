@@ -1,5 +1,6 @@
 import { ErrorType } from "../../constant/global.constant";
 import AppError from "../../errors/AppError";
+import Product from "../Product/product.model";
 import { TCategory } from "./category.interface";
 import Category from "./category.model";
 
@@ -19,6 +20,16 @@ const createNewCategoryIntoDB = async (data: TCategory) => {
 
 const getAllCategoryFromDB = async () => {
   const result = await Category.find({}, { __v: 0 });
+  return result;
+};
+
+const getSingleCategory = async (categoryId: string) => {
+  const result = await Category.findById(categoryId, { __v: 0 });
+
+  if (!result) {
+    throw new AppError(404, `Category not found!`, ErrorType.notfound);
+  }
+
   return result;
 };
 
@@ -53,6 +64,14 @@ const deleteCategoryIntoDB = async (categoryId: string) => {
     throw new AppError(400, `invalid category id`, ErrorType.validation);
   }
 
+  if (await Product.findOne({ category: categoryId })) {
+    throw new AppError(
+      400,
+      `This category already used, can't delete it`,
+      ErrorType.badRequest,
+    );
+  }
+
   await Category.findByIdAndDelete(categoryId);
 
   return null;
@@ -61,6 +80,7 @@ const deleteCategoryIntoDB = async (categoryId: string) => {
 const categoryServices = {
   createNewCategoryIntoDB,
   getAllCategoryFromDB,
+  getSingleCategory,
   updateCategoryIntoDB,
   deleteCategoryIntoDB,
 };

@@ -24,6 +24,17 @@ const getAllCategory = catchAsyncHandler(async (req, res) => {
   });
 });
 
+const getSingleCategory = catchAsyncHandler(async (req, res) => {
+  const result = await categoryServices.getSingleCategory(req.params.id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Successfully retrieved category",
+    data: result,
+  });
+});
+
 const updateCategory = catchAsyncHandler(async (req, res) => {
   const result = await categoryServices.updateCategoryIntoDB(
     req.params.id,
@@ -52,6 +63,7 @@ const deleteCategory = catchAsyncHandler(async (req, res) => {
 const categoryControllers = {
   createNewCategory,
   getAllCategory,
+  getSingleCategory,
   updateCategory,
   deleteCategory,
 };

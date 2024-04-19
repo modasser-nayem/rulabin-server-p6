@@ -119,7 +119,7 @@ const changePassword = async (data: TChangePassword) => {
   return null;
 };
 
-const forgetPassword = async (email: string) => {
+const forgotPassword = async (email: string) => {
   const user = await User.findOne({ email });
   if (!user) {
     throw new AppError(
@@ -141,7 +141,7 @@ const forgetPassword = async (email: string) => {
     "10m",
   );
 
-  const resetPassUiLink = `${config.RESET_PASS_UI_LINK}/?id=${user._id}&token=${accessToken}`;
+  const resetPassUiLink = `${config.RESET_PASS_UI_LINK}?id=${user._id}&token=${accessToken}`;
 
   sendEmail(email, resetPassUiLink);
   return null;
@@ -252,7 +252,7 @@ const userServices = {
   registerUserIntoDB,
   loginUserIntoDB,
   changePassword,
-  forgetPassword,
+  forgotPassword,
   resetPassword,
   getUserProfile,
   updateUserProfile,

@@ -30,9 +30,9 @@ router.post(
 
 // forget password
 router.post(
-  "/forget-password",
+  "/forgot-password",
   validateRequest(userSchemasValidation.forgetPasswordSchema),
-  userControllers.forgetPassword,
+  userControllers.forgotPassword,
 );
 
 // reset password

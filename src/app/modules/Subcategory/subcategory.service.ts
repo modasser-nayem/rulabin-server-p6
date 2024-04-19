@@ -1,6 +1,7 @@
 import { ErrorType } from "../../constant/global.constant";
 import AppError from "../../errors/AppError";
 import Category from "../Category/category.model";
+import Product from "../Product/product.model";
 import { TSubcategory } from "./subcategory.interface";
 import Subcategory from "./subcategory.model";
 
@@ -63,6 +64,14 @@ const updateSubcategoryIntoDB = async (
 const deleteSubcategoryIntoDB = async (subcategoryId: string) => {
   if (!(await Subcategory.findById(subcategoryId))) {
     throw new AppError(400, `invalid subcategory id`, ErrorType.validation);
+  }
+
+  if (await Product.findOne({ subcategory: subcategoryId })) {
+    throw new AppError(
+      400,
+      `This subcategory already used, can't delete`,
+      ErrorType.badRequest,
+    );
   }
 
   await Subcategory.findByIdAndDelete(subcategoryId);

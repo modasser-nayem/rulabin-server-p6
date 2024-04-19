@@ -60,8 +60,8 @@ const changePassword = catchAsyncHandler(async (req, res) => {
   });
 });
 
-const forgetPassword = catchAsyncHandler(async (req, res) => {
-  const result = await userServices.forgetPassword(req.body.email);
+const forgotPassword = catchAsyncHandler(async (req, res) => {
+  const result = await userServices.forgotPassword(req.body.email);
 
   sendResponse(res, {
     statusCode: 200,
@@ -157,7 +157,7 @@ const userControllers = {
   registerUser,
   loginUser,
   changePassword,
-  forgetPassword,
+  forgotPassword,
   resetPassword,
   getUserProfile,
   updateUserProfile,
